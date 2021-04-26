@@ -24,13 +24,25 @@ function login(e) {
             user_id = res.userId
         })
         .catch(error => console.error(error))
+
+    const input_user_id = document.getElementById("user_id").value
+    fetch(`/register/${input_user_id}`)
+        .then(res => res.json())
+        .then(reg => {
+            $registrationContainer.innerHTML = `
+            <div class="registration" data-regid=${reg.id}></div>
+            <p>Student id (sql): ${reg.student_id}</p>
+            <p>Event id: ${reg.event_id}</p>
+            `
+        })
+        .catch(error => console.error(error))
 }
 
 function spawnEvents() {
     fetch("/events")
         .then(res => res.json())
         .then(events => {
-            const eventsHTML = events.map( event => `
+            $eventsContainer.innerHTML = events.map( event => `
             <div class="event" data-eventid=${event.id}>
                 <p>${event.title}</p>
                 <div class="details">
@@ -41,7 +53,6 @@ function spawnEvents() {
                 <button onclick="e => {signUp(e);}">Sign Up!</button>
             </div>
             ` ).join("")
-            $eventsContainer.innerHTML = eventsHTML
         })
         .catch(err => console.error(err))
 }

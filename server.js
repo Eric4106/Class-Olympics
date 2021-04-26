@@ -19,10 +19,21 @@ app.get("/events", (req, res) => {
     })
 })
 
-app.post("/register", (req,res)=> {
+app.get("/register/:userId", (req, res) => {
+    const {userId} = req.params
+    const sql = `SELECT * FROM events
+    INNER JOIN registrations ON events.id = registrations.event_id
+    WHERE registrations.students_id = ?`
+    db.get(sql, [userId], (err, row) => {
+        if (err) console.error(err)
+        res.send({event: row})
+    })
+})
+
+app.post("/register", (req, res) => {
     const reg = req.body;
-    const sql = "INSERT INTO registrations (event_id, student_id) VALUES (?, ?)"
-    db.run(sql, [reg.event_id, reg.user_id], (err) => {
+    const registerSQL = "INSERT INTO registrations (event_id, student_id) VALUES (?, ?)"
+    db.run(registerSQL, [reg.event_id, reg.user_id], (err) => {
         if (err) console.error(err)
         res.send({
             message: "Registration successfully saved"
